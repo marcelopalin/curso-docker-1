@@ -1,15 +1,15 @@
-# Curso de Docker
+# 1. Curso de Docker
 
-## O que é o Docker?
+## 1.1. O que é o Docker?
 
 É uma tecnologia de virtualização, mas não tradicional.
 É uma engine de administração de **containers**, baseado no **Linux Containers**. De forma resumida, um container é um processo isolado do sistema, e a partir desse container eu consigo startar um serviço nesse container. Ele não é uma máquina virtual.
 
-### Definição Oficial
+### 1.1.1. Definição Oficial
 
 **_Containers Docker empacotam componentes de software em um sistema de arquivoscompleto, que contêm tudo necessário para a execução: código, runtime, ferramentas desistema - qualquer coisa que possa ser instalada em um servidor.Isto garante que o software sempre irá executar da mesma forma, independente do seuambiente._**
 
-## Por que não um VM?
+## 1.2. Por que não um VM?
 
 1- O Docker tende a utilizar menos recursos que um VM tradicional.
 2- Os processos rodam de forma mais rápida.
@@ -19,7 +19,7 @@ Porém nem sempre conseguiremos utilizar os Containers Docker, pois eles possuem
 - **Todas as imagens são linux**, apesar do host poder ser qualuqer SO que use ou emule um kernel linux, as imagens em sí serão baseadas en linux.
 - **Não é possível usar um kernel diferente do host**, o **Docker Engine** será executado sob uma determinada versão do kernel linux, e não é possível executar uma versão diferente, pois as imagens não possuem kernel.
 
-## O que são containers?
+## 1.3. O que são containers?
 
 É a segregação de processos no mesmo kernel, de forma que o processo seja isolado o máximo possível de todo o resto do ambiente.
 
@@ -33,21 +33,21 @@ O ideal é que existe um container específico para cada demanda da aplicação.
 
 O container é algo entre um **chroot** e uma VM.
 
-## O que são imagens Docker?
+## 1.4. O que são imagens Docker?
 
 É um modelo de sistema de arquivos somente-leitura usado para criar containers. Essas imagens são criadas através de um processo chamado **build**.
 A imagem é composta por camadas (layers), que são as mudanças que eu faço na imagem. Cada alteração gera uma layer e o conjunto de layers é a imagem.
 Essa imagem é representada por um ou mais arquivos e pode ser armazenada em um repositório.
 
-### Docker File System
+### 1.4.1. Docker File System
 
 O Docker utiliza file systems especiais para otimizar o uso, transferência e armazenamento das imagens, containers e volumes.
 
 O principal é o **AUFS**, que armazena os dados em camadas sobrepostas, e somente a camada mais recente é gravável.
 
-## Uso básico do Docker
+## 1.5. Uso básico do Docker
 
-### Hello World, meu Docker funciona!
+### 1.5.1. Hello World, meu Docker funciona!
 
 ```terminal
 docker container run hello-world
@@ -72,7 +72,7 @@ O comando run agrupa vários comando em sí. A partir da sua execução ele:
    docker container exec
    ```
 
-### Mudanças da versão 1.13
+### 1.5.2. Mudanças da versão 1.13
 
 A partir da versão 1.13, o Docker reestruturou toda a interface da linha de comando, para agrupar melhor os comando por contexto.
 
@@ -94,19 +94,99 @@ docker exec
 docker container exec
 ```
 
-## Modo interativo
+## 1.6. Modo interativo - (19 - Ferramentas Diferentes)
 
 Para executar um container podemos utilizar o modo Daemon e o modo interativo.
 
 O modo interativo é extremamente útil para processos experimentais, estudo dinâmico de ferramentas e de desenvolvimento.
 
-### Criando um container em modo interativo
+Exemplo: rodando de forma iterativa o Debian e mostrando a versão do bash dele é diferente do seu Bash no linux.
+
+Para verificarmos a versão do bash faça: 
+bash --version
 
 ```
-docker container run --name name -it imageName
+bash --version
+GNU bash, versão 5.0.17(1)-release (x86_64-pc-linux-gnu)
+Copyright (C) 2019 Free Software Foundation, Inc.
+Licença GPLv3+: GNU GPL versão 3 ou posterior <http://gnu.org/licenses/gpl.html>
+
+Este é um programa gratuito; pode alterá-lo e distribuí-lo à vontade.
+Não há QUALQUER GARANTIA, até aos limites previstos pela Lei.
 ```
 
-### Acessando container
+Se fizermos:
+
+```
+docker run debian bash --version
+```
+
+Na primeira vez que executamos ele baixa a imagem (pull), cria o contâiner (create), 
+inicializa o contâiner (start) e executa (exec) no modo iterativo.
+
+```
+docker run debian bash --version
+Unable to find image 'debian:latest' locally
+latest: Pulling from library/debian
+b9a857cbf04d: Pull complete 
+Digest: sha256:b16f66714660c4b3ea14d273ad8c35079b81b35d65d1e206072d226c7ff78299
+Status: Downloaded newer image for debian:latest
+GNU bash, version 5.0.3(1)-release (x86_64-pc-linux-gnu)
+Copyright (C) 2019 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+
+This is free software; you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+```
+
+Rodando pela 2a vez é mais rápido:
+
+```
+~/github.com/curso-docker-1$ docker run debian bash --version
+GNU bash, version 5.0.3(1)-release (x86_64-pc-linux-gnu)
+Copyright (C) 2019 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+
+This is free software; you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+```
+
+```
+docker container ps
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+```
+
+Porém, com a flag -a listaremos todos os contâineres criados
+
+```
+docker container ps -a
+CONTAINER ID   IMAGE         COMMAND            CREATED          STATUS                      PORTS     NAMES
+5ed0ba915e8b   debian        "bash --version"   5 minutes ago    Exited (0) 5 minutes ago              modest_blackwell
+b13ab9c9401b   debian        "bash --version"   10 minutes ago   Exited (0) 10 minutes ago             boring_meitner
+3cd943a539f5   hello-world   "/hello"           3 hours ago      Exited (0) 3 hours ago                peaceful_booth
+e959f97d6feb   hello-world   "/hello"           3 hours ago      Exited (0) 3 hours ago                agitated_stonebraker
+```
+
+> O método run sempre **cria um novo** contâiner!
+
+Vamos rodar o comando run no modo iterativo:
+
+```
+docker container run -it debian bash
+```
+
+Permite você fazer testes no debian, 
+
+### 1.6.1. Criando um container em modo interativo
+
+Como o método run sempre cria um contâiner, para reutilizarmos vamos colocar
+um <nomeContainer>
+
+```
+docker container run --name  -it imageName
+```
+
+### 1.6.2. Acessando container
 
 ```
 docker container start -ai containerName
@@ -119,11 +199,10 @@ Resumo
 3. Os containers **devem ter nomes únicos**
 4. É possível reutilizar containers
 
-## Cego, surdo e mudo, só que não!
+## 1.7. Cego, surdo e mudo, só que não!
 
-Um container normalmente roda com o máximo de isolamento possível do host, este isolamento é11
-possível através do Docker Engine e diversas características provídas pelo kernel.
-Entretanto não é interessante obter um isolamento totla do seu host, e sim um isolamento controlado, em que o container tenha acesso a recursos do host que são explicitamente indicados.
+Um container normalmente roda com o máximo de isolamento possível do host, este isolamento é possível através do **Docker Engine** e diversas características provídas pelo kernel.
+Entretanto não é interessante obter um isolamento total do seu host, e sim um isolamento controlado, em que o container tenha acesso a recursos do host que são explicitamente indicados.
 
 Os principais recursos de controle de isolamento
 
@@ -132,7 +211,7 @@ Os principais recursos de controle de isolamento
 - Cópia de arquivpos para o contianer ou partindo do container
 - Comunicação entre os containers.
 
-## Mapeamento de portas
+## 1.8. Mapeamento de portas
 
 É possível mapear portas **TCP** e **UDP** diretamente para o host, permitindo acesso através de toda a rede, não necessitando ser a mesma porta do container. O método mais comum para este fim é o parâmetro -p no comando `docker contianer run`, a flag `-p` recebe um parâmetro composto por dois números separados por `:`. O primeiro é o a porta no host e o segundo no container.
 
@@ -145,7 +224,16 @@ exemplo: 172.17.0.1 - - [09/Apr/2017:19:28:48 +0000] "GET / HTTP/1.1" 304 0 "-""
 CTRL-C para sair
 ```
 
-## Mapeamento de diretórios para o container
+Neste caso estamos exportando a porta 8080 e mapeando ela para acessar a porta 80 do contâiner.
+
+Você pode testar usando:
+
+curl http://localhost:8080
+
+ou acesse o browser http://localhost:8080
+
+
+## 1.9. Mapeamento de diretórios para o container
 
 É possível mapear diretórios e volumes no host para diretório no container. No momento vamos focar em um mapeamento mais simples, um diretório no host para um diretório no container. O método mais comum para este fim é o parâmetro `-v`no comando `docker container run`. O `-v` recebe um parâmetro que geralmente é comporto por dois caminhos absolutos separados por `:`. Assim como diversos outros parâmetros, o primeiro é o diretório no host e o segundo no container.
 
@@ -155,7 +243,7 @@ Exemplo
 docker container run -p 8080:80 -v $(pwd)/html:/usr/share/nginx/html nginx
 ```
 
-## Modo daemon
+## 1.10. Modo daemon
 
 O modo daemon é onde o container executa em background. Para realizar isso é simples, para utilizar o parâmetro `-d` do `docker container run`, indicando ao Docker para iniciar o container em background (modo daemon).
 
@@ -183,9 +271,9 @@ Podemos reiniciar o container com o comando
 docker container restart ex-daemon-basic
 ```
 
-## Deixando de ser apenas um usuário
+## 1.11. Deixando de ser apenas um usuário
 
-### Diferenças entre containers e imagens
+### 1.11.1. Diferenças entre containers e imagens
 
 Utilizando uma análogia de Orientação a Objetos:
 
@@ -200,7 +288,7 @@ A imagem é um modelo de sistema de arquivos somente leitura em formato de camad
 O container cria outras camadas de acordo com seu modo de uso.
 O container é o processo e a imagem é o modelo de arquivos para criação de containers.
 
-### Entendendo melhor as imagens
+### 1.11.2. Entendendo melhor as imagens
 
 Toda imagem (bem como os containers) possuem um identificador único em formato hash usando `sha256`. Porém seu uso não é muito prático, então para simplificar isto o docker utiliza uma tag para identificar imagens. A tag normalmente é formada por um nome, seguido de : dois pontos e depois uma versão.  
 É extremamente comum utilizar uma versão chamada latest para representar a versão mais atual.
@@ -222,7 +310,7 @@ Para mudar a tags de uma imagem podemos utilizar o comando:
 docker image tag redis:lastest cod3r-redis
 ```
 
-### Comandos básicos no gerenciamento de imagens
+### 1.11.3. Comandos básicos no gerenciamento de imagens
 
 1. `docker image pull <tag>`
    Baixa a imagem solicitada. Esse comando pode ser executado implicitamente, quando o docker precisa de uma imagem para outra operação e não consegue localiza-la no cache local.
@@ -237,7 +325,7 @@ docker image tag redis:lastest cod3r-redis
 6. `docker image push <tag>`
    Permite o envio de uma imagem ou tag local para um registry
 
-### Docker Hub x Docker Registry
+### 1.11.4. Docker Hub x Docker Registry
 
 **Docker Registry** é uma aplicação server side para guardar e distribuir imagens Docker.
 
@@ -245,7 +333,7 @@ docker image tag redis:lastest cod3r-redis
 
 Dica: A cli possui o comando `docker search <tag>` para procurar imagens do Docker Hub.
 
-## Construção de uma imagem
+## 1.12. Construção de uma imagem
 
 Processo para gerar uma nova imagem a partir de um arquivo de instruções.
 
@@ -275,7 +363,7 @@ docker container run -p 80:80 ex-simple-build
 **Dica** 
 O comando __build__ exige a informação do diretório aonde o __build__ será executado, bem como onde o arquivo de instruções se encontra.
 
-### Instruções para a preparação de imagem
+### 1.12.1. Instruções para a preparação de imagem
 
 `FROM`
    Especifica a imagem base a ser utilizada pela nova imagem
@@ -307,7 +395,7 @@ docker container run ex-build-arg bash -c 'echo $S3_BUCKET'
 ```
 
 
-### Instruções para povoamento da imagem
+### 1.12.2. Instruções para povoamento da imagem
 
 `COPY`
    Copia arquivos e diretórios para dentro da imagem
@@ -342,7 +430,7 @@ docker container run -p 80:80 ex-build-copy
 **Dica**
 Para entendermos melhor é necesśario executá-lo uma primeira vez e navegar na porta 80. E depois copiar o arquivo `exemplo-conteudo.html` para `conteudo.html`, executá-lo novamente e verificar o resultado no browser.
 
-## Instruções com configuração para execução do container
+## 1.13. Instruções com configuração para execução do container
 
 `EXPOSE`
    Informa ao Docker que a imagem expõe determinadas portas remapeadas no container. A exposição da porta não é obrigatória a partir do uso do recurso de redes internas do Docker. Porém a exposição ajuda a document e permite mapear rapidamente através do parâmetro `-P` do `docker container run`
@@ -425,30 +513,30 @@ logging.info('usuario: %s', getpass.getuser())
 httpd.serve_forever()
 ```
 
-## Tipos de rede de Containers Docker
+## 1.14. Tipos de rede de Containers Docker
 
-### None Network
+### 1.14.1. None Network
 É um container que não tem nenhum tipo de rede. Ele é isolado e não tem acesso ao mundo exterior, nem a outros containers. É o mais adequado para aplicações que não tem nenhum acesso a rede.
 
 > docker container run -d --net none debian
 
-### Bridge Network
+### 1.14.2. Bridge Network
 
 É o modo de rede padrão na criação do container.
 
-### Host Network
+### 1.14.3. Host Network
 Nesse modo o container vai usar diretamente a interface de rede do seu host. O nível de proteção é bem menor que no modo Bridge, porém há ganho na velocidade de acesso aos recursos de rede.
 
 
-## Coordenando múltiplos containers
+## 1.15. Coordenando múltiplos containers
 
 É interessante que para cada elemento que componha sua aplicação seja disponibilizado cada um deles em um container separado.
 
-### Docker Composer
+### 1.15.1. Docker Composer
 
 Faz a composição de várias imagens para gerar os serviços para a aplicação. 
 
 
-### Gerenciamento de micro service
+### 1.15.2. Gerenciamento de micro service
 
 Micro service é o sistema divido em pequenas partes que realizam tarefas independentes, que juntos formam o todo da aplicação. Facilita o ciclo de desenvolvimento e a manutenabilidade do projeto.
